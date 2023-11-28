@@ -110,6 +110,16 @@ try {
                 );
             }
         });
+        createAdminTable((res) => {
+            if (res == true) {
+                console.log(`Created Admin Table inside ${dbName}.db`);
+            } else {
+                console.log(
+                    `Unable to create Admin Table inside ${dbName}.db`
+                );
+            }
+        }); 
+        
     });
 } catch (e) {
     console.log(e);
@@ -141,7 +151,7 @@ function createVaccineTable(callback) {
         "    vaccine_id         INTEGER        PRIMARY KEY AUTOINCREMENT," +
         "    name       VARCHAR (400)," +
         "    company_name        VARCHAR (200)," +
-        "    no_doses           INTEGER," +
+        "    no_doses            VARCHAR (200)," +
         "    discription   VARCHAR (1000),"+
         "    availability   VARCHAR (1000),"+
         "    on_hold   VARCHAR (1000)"+        
@@ -176,6 +186,8 @@ function createPatientTable(callback) {
         "   occupation_class     VARCHAR (500), " +
         "   medical_history     VARCHAR (500), " +
         "   phone_no     VARCHAR (10), " +
+        "   password     VARCHAR (500), " +
+        "   user_id     VARCHAR (500) UNIQUE , " +
         "   eligibility_status     VARCHAR (500)" +
         ");";
 
@@ -203,7 +215,9 @@ function createNurseTable(callback) {
         "   age     INTEGER, " +
         "   gender     VARCHAR (500), " +
         "   address     VARCHAR (1000), " +
-        "   phone_no     VARCHAR (10) " +
+        "   phone_no     VARCHAR (10), " +
+        "   password     VARCHAR (500), " +
+        "   user_id     VARCHAR (500) UNIQUE " +
         ");";
 
     sqlParams = [];
@@ -363,3 +377,62 @@ function createVaccinationRecordTable(callback) {
         return callback(true);
     });
 }
+
+function createAdminTable(callback) {
+    sqlQuery =
+        "CREATE TABLE admin ( " +
+        "   password     VARCHAR (500), " +
+        "   user_id     VARCHAR (500) UNIQUE" +
+       
+        ");";
+
+    sqlParams = [];
+
+    return db.run(sqlQuery, sqlParams, function (err) {
+        if (err != null) {
+            console.log("Error while creating Table");
+            console.log(err);
+            return callback(false);
+        }
+
+        return callback(true);
+    });
+}
+function insertNewadmin() {
+  
+        queryString = "INSERT INTO admin(user_id, password) ";
+        queryString += " VALUES('admin', 'admin');";
+
+        sqlParams = [];
+
+        return db.run(queryString, sqlParams, function (err) {
+            if (err != null) {
+                console.log("Error while inserting Table");
+                console.log(err);
+                console.log(false)
+                // return callback(false);
+            }
+            console.log(true)
+            // return callback(true);
+        });
+
+        
+   
+}
+
+async function checkadmin() {
+    queryString = "SELECT * FROM admin";
+    try {
+        const result = await db.get(queryString, []);
+        return result
+        // if (result == undefined) {
+        //     return false;
+        // }
+        // return true;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
+module.exports = {insertNewadmin,checkadmin}
